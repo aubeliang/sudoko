@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数独解题</title>
+    <link href="../static/index.css" rel="stylesheet" >
+</head>
+<body>
+    <main id="main">
+        <div id="sudoku">
+            <table>
+                <thead>
+                    <h1 id="banner">欢迎使用sudoku解题系统</h1>
+                </thead>
+                <tbody>
+                    {% for row in range(1, 10) %}
+                        <tr>
+                        {% for column in range(1, 10) %}
+                            <td>
+                                {% if row in [1, 2, 3] and column in [1, 2, 3] %}
+                                    <input type="text" id="cell_{{ row }}{{ column }}" class="block_11" />
+                                {% elif row in [4, 5, 6] and column in [4, 5, 6] %}
+                                    <input type="text" id="cell_{{ row }}{{ column }}" class="block_22" />
+                                {% elif row in [7, 8, 9] and column in [7, 8, 9] %}
+                                    <input type="text" id="cell_{{ row }}{{ column }}" class="block_33" />
+                                {% else %}
+                                    <input type="text" id="cell_{{ row }}{{ column }}" />
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="controll_area">
+                <span id="info" class=""></span><br />
+                <button id="reset" onclick="reset_input()">重置</button>
+                <button id="submit" onclick="get_answer();">提交</button>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <script>
+            // 获取问题输入
+            function get_question() {
+                let question = [
+                    [], [], [],
+                    [], [], [],
+                    [], [], [],
+                ]
+                for (let row = 1; row <= 9; row++) {
+                    for (let column = 1; column <= 9; column++) {
+                        let current_id = 'cell_' + row + column;
+                        question[row - 1][column - 1] = document.getElementById(current_id).value;
+                    }
+                }
+                return question;
+            }
+
+            // 向服务器提交问题，拿回答案
+            function get_answer() {
+                let question = get_question();
+                console.log('post到服务器拿回答案');
+                let request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (request.readyState == 1) {
+                        document.getElementById('info').innerText = '正在获取结果';
+                    } else if (request.readyState == 4) {
+                        let answer = request.responseText;
+                        answer = JSON.parse(answer)['answer']
+                        show_answer(answer);
+                    }
+                }
+                request.open('POST', '/get_answer')
+                request.send(JSON.stringify(question));
+            }
+
+            // 将答案展示在前台
+            function show_answer(answer) {
+                console.log('将答案展示在前台');
+                let info = document.getElementById('info');
+                if (answer.length == 9 && answer[0].length == 9) {
+                    for (let row = 1; row <= 9; row++) {
+                        for (let column = 1; column <= 9; column++) {
+                            let current_id = 'cell_' + row + column;
+                            document.getElementById(current_id).value = answer[row - 1][column - 1];
+                        }
+                    }
+                    info.innerText = '获取结果成功';
+                    return;
+                }
+                info.innerText = '返回的结果数据不对。';
+            }
+
+            // 清空现有输入
+            function reset_input() {
+                for (let row = 1; row <= 9; row++) {
+                    for (let column = 1; column <= 9; column++) {
+                        let current_id = 'cell_' + row + column;
+                        document.getElementById(current_id).value = '';
+                    }
+                }
+                document.getElementById('info').innerText = '清除成功';
+            }
+        </script>
+    </footer>
+</body>
+</html>

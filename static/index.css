@@ -1,0 +1,39 @@
+table {
+    margin: 0 auto;
+    border: black solid 1px;
+}
+
+input {
+    width: 20px;
+    height: 20px;
+}
+
+.block_11 {
+    background-color: bisque;
+}
+
+.block_22 {
+    background-color: chocolate;
+}
+
+.block_33 {
+    background-color: hotpink;
+}
+
+#banner {
+    text-align: center;
+}
+
+#main {
+    width: 70%;
+    margin: 0 auto;
+}
+
+#controll_area {
+    margin: 1rem 0 0;
+    text-align: center;
+}
+
+#info {
+    color: red;
+}
